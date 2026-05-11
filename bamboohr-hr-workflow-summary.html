@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BambooHR Integration & HR Workflow — Marlin Hawk</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --paper: #ffffff;
+    --accent: #b5451b;
+    --muted: #666666;
+    --rule: #e0e0e0;
+    --tag-bg: #f0f0f0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 60px 40px;
+  }
+
+  .page {
+    max-width: 780px;
+    margin: 0 auto;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Header */
+  .header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 28px;
+    margin-bottom: 48px;
+  }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  /* Overview */
+  .overview {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 28px 32px;
+    margin-bottom: 48px;
+    border-radius: 2px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .overview p {
+    font-size: 15px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* Sections */
+  section {
+    margin-bottom: 44px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  section:nth-child(3) { animation-delay: 0.15s; }
+  section:nth-child(4) { animation-delay: 0.2s; }
+  section:nth-child(5) { animation-delay: 0.25s; }
+  section:nth-child(6) { animation-delay: 0.3s; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  /* Workflow steps */
+  .workflow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .step {
+    display: flex;
+    gap: 20px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .step:first-child { border-top: 1px solid var(--rule); }
+
+  .step-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    min-width: 24px;
+    padding-top: 2px;
+  }
+
+  .step-content strong {
+    font-weight: 500;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .step-content span {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Tags grid */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .tag {
+    background: var(--tag-bg);
+    font-size: 12px;
+    font-weight: 400;
+    padding: 6px 14px;
+    border-radius: 2px;
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* Build table */
+  .build-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .build-table tr {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .build-table tr:first-child {
+    border-top: 1px solid var(--rule);
+  }
+
+  .build-table td {
+    padding: 12px 0;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+
+  .build-table td:first-child {
+    font-weight: 400;
+    width: 60%;
+  }
+
+  .build-table td:last-child {
+    color: var(--muted);
+    text-align: right;
+  }
+
+  .status-done {
+    color: #2a7a4b !important;
+    font-weight: 500;
+  }
+
+  .status-pending {
+    color: var(--accent) !important;
+  }
+
+  /* Next steps */
+  .next-steps {
+    counter-reset: ns;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .next-steps li {
+    counter-increment: ns;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+
+  .next-steps li::before {
+    content: counter(ns, decimal-leading-zero);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    min-width: 24px;
+    padding-top: 2px;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="eyebrow">Marlin Hawk · Global Operations</div>
+    <h1>BambooHR Integration<br>& HR Workflow</h1>
+    <div class="subtitle">Claude-powered HR automation — summary document</div>
+  </div>
+
+  <div class="overview">
+    <p>Plan to connect BambooHR to Claude to automate HR document generation and approvals, with outputs managed in ClickUp, executed via DocuSign, and delivered through Outlook.</p>
+  </div>
+
+  <section>
+    <div class="section-label">02 — End-to-End Workflow</div>
+    <h2>How It Works</h2>
+    <div class="workflow">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <strong>Trigger</strong>
+          <span>Initiated in ClickUp with employee name and action type (e.g. exit, offer, amendment).</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <strong>Data Pull</strong>
+          <span>Claude fetches employee data from BambooHR via API — start date, role, salary, and more.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <strong>Draft Generation</strong>
+          <span>Claude produces the document using Marlin Hawk templates.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <strong>ClickUp Task Created</strong>
+          <span>Draft attached and assigned to the relevant director for review.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">05</div>
+        <div class="step-content">
+          <strong>Director Approval</strong>
+          <span>Director reviews and approves (or requests edits) directly within ClickUp.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">06</div>
+        <div class="step-content">
+          <strong>Signing</strong>
+          <span>Approved document routes to DocuSign for execution.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">07</div>
+        <div class="step-content">
+          <strong>Delivery</strong>
+          <span>Signed document sent to employee via Outlook.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">03 — Capabilities</div>
+    <h2>What Claude Can Handle</h2>
+    <div class="tags">
+      <div class="tag">Exit Letters</div>
+      <div class="tag">Offer Letters</div>
+      <div class="tag">Contract Amendments</div>
+      <div class="tag">Probation Confirmations</div>
+      <div class="tag">Reference Letters</div>
+      <div class="tag">Onboarding Checklists</div>
+      <div class="tag">Offboarding Checklists</div>
+      <div class="tag">Leave & Absence Summaries</div>
+      <div class="tag">Policy Q&A</div>
+      <div class="tag">ERA 2025 Compliance Flagging</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">04 — Build Requirements</div>
+    <h2>What's Needed</h2>
+    <table class="build-table">
+      <tr>
+        <td>BambooHR API key</td>
+        <td class="status-pending">To obtain</td>
+      </tr>
+      <tr>
+        <td>Signing tool</td>
+        <td class="status-done">✓ DocuSign</td>
+      </tr>
+      <tr>
+        <td>Marlin Hawk letter templates</td>
+        <td class="status-pending">To provide</td>
+      </tr>
+      <tr>
+        <td>ClickUp HR & People doc</td>
+        <td class="status-done">✓ Existing</td>
+      </tr>
+      <tr>
+        <td>ClickUp connector</td>
+        <td class="status-done">✓ Connected</td>
+      </tr>
+      <tr>
+        <td>Outlook (M365) connector</td>
+        <td class="status-done">✓ Connected</td>
+      </tr>
+    </table>
+  </section>
+
+  <section>
+    <div class="section-label">05 — Next Steps</div>
+    <h2>Action Items</h2>
+    <ol class="next-steps">
+      <li>Obtain BambooHR API key from account settings</li>
+      <li>Share existing exit letter template with Piers / Claude</li>
+      <li>Build proof of concept — exit letter generation → ClickUp task → director approval → DocuSign → Outlook delivery</li>
+      <li>Expand to additional document types once POC is validated</li>
+    </ol>
+  </section>
+
+  <footer>
+    <span>Marlin Hawk Limited · Global Operations</span>
+    <span>Generated May 2026</span>
+  </footer>
+
+</div>
+</body>
+</html>
